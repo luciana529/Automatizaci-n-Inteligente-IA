@@ -1,0 +1,395 @@
+{
+  "name": "agente_IA__en_pag_web",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -2768,
+        -944
+      ],
+      "id": "5ff2e445-4488-49cc-8dc6-809ec0c117f2",
+      "name": "When chat message received",
+      "webhookId": "e89c0864-50e5-4622-8e1c-5194e12fb183"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1984,
+        -800
+      ],
+      "id": "cf496bc8-61d2-4d9b-b174-9f4a3a0e5345",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EYQ1P9u4qVEDEJE8",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BzZCcox39fPzOtoLWXm-AFzyXLrc-rV2bq7B5MpgC7Y",
+          "mode": "list",
+          "cachedResultName": "Preguntas frecuentes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BzZCcox39fPzOtoLWXm-AFzyXLrc-rV2bq7B5MpgC7Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BzZCcox39fPzOtoLWXm-AFzyXLrc-rV2bq7B5MpgC7Y/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -1760,
+        -816
+      ],
+      "id": "e75f049c-dadb-48ff-aa1e-35e31dabf2da",
+      "name": "preguntas_frecuentes",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uJbvQKdaY99JbvNQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=\"Eres el Asistente Informativo de Luciana Ramirez Systems. Tu perfil es de atención al cliente y soporte.\n\nTu misión:\n\nResponder dudas sobre servicios, horarios y funcionamiento de la empresa de forma clara y concisa.\n\nSi el usuario pregunta algo que no está en tus herramientas, dile amablemente que no posees esa información.\n\nLímite: Si el usuario dice que quiere contratar o pide un precio específico, dile: 'Entiendo perfectamente. Para darte una atención personalizada y un presupuesto a medida, te voy a derivar con nuestro departamento comercial'.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2032,
+        -960
+      ],
+      "id": "3c1aeb7f-0d84-42af-83a2-d747ce610878",
+      "name": "chat bot web"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $node[\"When chat message received\"].json.chatInput }}",
+        "options": {
+          "systemMessage": "=\n\"Eres el Ejecutivo de Ventas Senior de Luciana Ramirez Systems. Tu perfil es altamente persuasivo, profesional y orientado a resultados.\nla herramienta que utilizaras para comunicar la informacion que recopiles es Gmail\n\nTu misión:\n\nConvertir el interés del usuario en una cita o contacto formal.\n\nPsicología de ventas: Usa frases como 'Para garantizar el éxito de tu proyecto...', 'Para darte una solución exacta a las necesidades de tu empresa...'.\n\nCaptación obligatoria: Antes de terminar la charla, DEBES haber solicitado: Nombre, Email y el principal desafío de su negocio.\n\nUna vez obtenidos los datos, usa la herramienta de Gmail para notificar al equipo.\nenviando un correo con los datos que te brindo el cliente\n\nRegla: No respondas dudas generales de soporte. Tu enfoque es: 'Esa es una excelente pregunta técnica que nuestro equipo podrá detallarte en la reunión de consultoría que vamos a agendar'.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2000,
+        -672
+      ],
+      "id": "d09df245-f817-45eb-86c9-c302a3e0f4f4",
+      "name": "captacion _leads"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "text"
+            }
+          },
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -2048,
+        -512
+      ],
+      "id": "6c923564-05c7-43f9-b2c0-74eb4f92532b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "EYQ1P9u4qVEDEJE8",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1920,
+        -528
+      ],
+      "id": "006dd2f3-b5aa-4b3e-b004-bb27b7b6a4e4",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1872,
+        -800
+      ],
+      "id": "32443c24-972a-49dc-94be-96edefc61b98",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -2544,
+        -752
+      ],
+      "id": "f1f52577-ae37-41c9-9db0-90307b5e0198",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "79ac3811-e3fe-4eee-881e-8164ed52c172",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "CHAT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2288,
+        -928
+      ],
+      "id": "488f4203-d31d-4444-b848-28b3dc53743c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "luciana.ramirez.systems@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -1808,
+        -528
+      ],
+      "id": "363a6b9f-424b-4993-adba-60e16aa007a8",
+      "name": "Send a message in Gmail",
+      "webhookId": "ef7d81e5-50d9-4341-86a4-8bb5d2b587e3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "p3VH4QJuv2gD6YcK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Para que Luciana Ramirez Systems funcione con total precisión y los agentes no se pisen entre sí, necesitamos un \"Portero\" (Clasificador) con reglas de exclusión muy claras y agentes con personalidades opuestas.\n\nAquí tienes los 3 prompts optimizados para esta nueva estructura:\n\n1. El Clasificador (Nodo AI Agent \"Portero\")\nEste es el que decide el camino. Su misión es ser un filtro binario.\n\nSystem Prompt:\n\n\"Eres el Clasificador Estratégico de Luciana Ramirez Systems. Tu única función es etiquetar la intención del usuario.\n\nResponde 'LEAD' solo si el usuario muestra intención de avance comercial:\n\nPide presupuestos o precios.\n\nQuiere agendar una cita o reunión.\n\nDice 'quiero contratar' o 'me interesa el servicio'.\n\nProporciona datos de contacto espontáneamente.\n\nResponde 'CHAT' para todo lo demás:\n\nDudas sobre qué es la IA.\n\nPreguntas sobre horarios, ubicación o quiénes somos.\n\nConsultas generales de '¿Cómo funciona tal servicio?'.\n\nREGLA DE ORO: Responde ÚNICAMENTE la palabra 'CHAT' o la palabra 'LEAD'. No des explicaciones.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -2608,
+        -944
+      ],
+      "id": "d4b1b14d-a5cf-4ec7-80ba-bd1521c712e4",
+      "name": "clasificador"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "clasificador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "chat bot web",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "preguntas_frecuentes": {
+      "ai_tool": [
+        [
+          {
+            "node": "chat bot web",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "captacion _leads",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "clasificador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "captacion _leads",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "chat bot web",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "clasificador",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "chat bot web",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "captacion _leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "captacion _leads",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clasificador": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0fd748af-4578-4ebe-8b0f-de6c496b6ea3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "193188f8453b2c43a2b99e669200f32e7aa2309ae438f0d617d0301a2cc1643f"
+  },
+  "id": "GLzlH9WwuUkXMj89F-1Wi",
+  "tags": []
+}
