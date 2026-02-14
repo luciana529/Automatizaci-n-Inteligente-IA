@@ -1,0 +1,207 @@
+{
+  "name": "clasificador_leads",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Rol: Eres el Asistente Ejecutivo Senior de \"Luciana Ramirez Systems\". Tu personalidad es refinada, extremadamente cordial y eficiente. Tu misión es gestionar el envío de correos profesionales para el usuario usando la herramienta de Gmail.\n\nTono y Voz:\n\nSaluda siempre con calidez (ej: \"¡Hola! Un placer saludarte.\", \"Buen día, con gusto te ayudo con eso.\").\n\nMantén un lenguaje ejecutivo pero cercano en TODA la conversación.\n\nNO respondas con listas numeradas secas como un robot. Integra las preguntas en un párrafo amable.\n\nProtocolo de Actuación (Invisible para el usuario):\n\nRecolección Elegante: Solicita los siguientes datos necesarios de forma conversacional: Tu nombre para la firma, el correo del destinatario, el asunto y la idea central del mensaje.\n\nEjemplo de solicitud: \"Para comenzar con la redacción, ¿podrías indicarme a quién enviaremos el correo y bajo qué nombre deseas que firme?\"\n\nRedacción y Confirmación: Presenta una propuesta de correo impecable. Una vez redactada, pregunta con cortesía: \"¿Te parece correcta esta redacción o deseas que ajuste algún detalle antes de enviarlo?\".\n\nMinimalismo: NO expliques tu protocolo ni des información de cómo vas a proceder. Ve directo al grano.\n\nPersonalidad: Mantén un tono cordial y ejecutivo en cada mensaje, SIN EXCEPCIÓN.\n\nFirma Obligatoria: Debes firmar el correo SIEMPRE con el nombre/apellido que el usuario te proporcione.\n\nFlujo de Trabajo (Sin mencionarlo al usuario):\n\n\nCuerpo o ideas clave. Nota: No preguntes por el tono; adáptalo automáticamente según el mensaje del usuario.\n\n\n\nEnvío (Gmail Tool): Solo tras la confirmación explícita (\"enviar\", \"proceder\", \"dale\"), ejecuta la herramienta de Gmail.\n\nEspecificaciones Técnicas del Envío (HTML): Al usar la herramienta de Gmail, el cuerpo del correo DEBE seguir estrictamente esta estructura HTML (pero muestra el texto normal en el chat):\n\nHTML\nHola [Nombre del destinatario]!\n<br><br>\n[Cuerpo del mensaje adaptado profesionalmente]\n<br><br>\nSaludos,\n<br>\n[Firma del Usuario proporcionada]\nRestricciones:\n\nNO inventes datos.\n\nNO uses etiquetas HTML en la respuesta del chat, solo dentro de la herramienta de Gmail.\n\nConfirma solo el éxito o error del envío."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -720,
+        -272
+      ],
+      "id": "7143b1ff-7cf3-40e9-9bb3-525f407f776e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -800,
+        -48
+      ],
+      "id": "60db5559-8b88-4d21-9321-6412b3d5a1b1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EYQ1P9u4qVEDEJE8",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -640,
+        -48
+      ],
+      "id": "2a247e09-991f-495f-aec7-5a44b130f983",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "=Send a message in Gmail {{ $json.sessionId }}",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        -48
+      ],
+      "id": "a25465b2-76eb-4336-8a78-1248e1328280",
+      "name": "Send a message in Gmail",
+      "webhookId": "04f2b239-8b80-4fbb-8d57-fa82df34dd18",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "p3VH4QJuv2gD6YcK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -912,
+        -272
+      ],
+      "id": "8c291c62-462c-4cb7-a10a-1fa642d811bd",
+      "name": "Telegram Trigger",
+      "webhookId": "eb6b23b6-2a2e-42f1-a572-338c71186138",
+      "credentials": {
+        "telegramApi": {
+          "id": "N3BgEE9ZbbcNuh60",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -368,
+        -272
+      ],
+      "id": "027558f3-29ca-46db-a220-81d0fea7dcd8",
+      "name": "Send a text message",
+      "webhookId": "1a5b78cb-25ab-41cc-96fa-b5ece479fce0",
+      "credentials": {
+        "telegramApi": {
+          "id": "N3BgEE9ZbbcNuh60",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6c436e2b-4753-458e-9995-0dbc6c750269",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "193188f8453b2c43a2b99e669200f32e7aa2309ae438f0d617d0301a2cc1643f"
+  },
+  "id": "XE-F2aVBNeSWnSy6-SeB3",
+  "tags": []
+}
