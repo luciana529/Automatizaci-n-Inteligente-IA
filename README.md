@@ -1,51 +1,60 @@
-🚀 Luciana Ramirez Systems: Automatización Inteligente & IA
-Bienvenido al repositorio central de Luciana Ramirez Systems. Aquí documento el desarrollo de ecosistemas de automatización utilizando n8n, IA Generativa y despliegues robustos mediante Docker y ngrok.
+🚀 Luciana Ramirez Systems: Ecosistema de Automatización con IA
+Bienvenido al repositorio central de Luciana Ramirez Systems. Este proyecto representa una infraestructura completa de operaciones inteligentes, diseñada para automatizar el ciclo de vida del cliente: desde el primer contacto en redes sociales hasta la gestión de citas en el CRM.
 
-📌 Proyecto Destacado: Clasificador de Leads & Agente de Ventas Autónomo
-Este flujo resuelve la gestión ineficiente de mensajes entrantes mediante el uso de lógica condicional e Inteligencia Artificial para diferenciar consultas informativas de oportunidades comerciales.
+🌟 Visión General
+Luciana Ramirez Systems utiliza n8n como orquestador principal, integrando modelos de lenguaje avanzado (OpenAI GPT-4o) para transformar interacciones simples en procesos de negocio automatizados y eficientes.
 
-🛠️ Tecnologías Utilizadas
-Core: n8n (Desplegado en Docker)
+📂 Estructura de Proyectos
+En este repositorio encontrarás tres módulos clave:
 
-LLMs: OpenAI (GPT-4o) para razonamiento complejo y Google Gemini como soporte.
+1. 📬 Agente Autónomo de Telegram
+Función: Atención al cliente 24/7 vía Telegram.
 
-Canales: Telegram / Web Chat.
+Utiliza memoria de sesión para mantener conversaciones fluidas.
 
-Infraestructura: ngrok para túneles seguros y Webhooks.
+Procesa consultas generales y las escala automáticamente a canales internos.
 
-Integraciones: Gmail API para notificaciones automáticas.
+2. 🧠 Triaje y Clasificación de Leads
+Función: Inteligencia de enrutamiento para tráfico web.
 
-🧠 Arquitectura del Flujo
-Trigger de Entrada: Recepción de mensajes en tiempo real vía Telegram/Chat.
+Un "Agente Portero" analiza la intención del usuario.
 
-Clasificación Semántica: Un Agente de IA actúa como "Portero", analizando la intención del usuario para clasificarla como CHAT (Informativo) o LEAD (Comercial).
+Divide el flujo entre un Chatbot Informativo (FAQs desde Google Sheets) y un Agente de Captación persuasivo.
 
-Lógica Condicional (Branching): Nodo IF con saneamiento de datos mediante expresiones de JavaScript:
+3. 📅 Gestión de Citas y CRM
+Función: Conversión final y registro de datos.
 
-JavaScript
-{{ $json.output.trim().toUpperCase() }}
-Extracción de Datos (NER): Algoritmo de extracción de información para identificar DNI, CIF, Nombres y Teléfonos explícitos en el texto.
+Integración con https://www.google.com/search?q=Cal.com para agendamiento automático.
 
-Acción Final: Envío automático de ficha de cliente a Gmail y respuesta personalizada según el perfil del agente.
+Notificaciones vía Gmail y sincronización en tiempo real con un CRM en Google Sheets.
 
-🛠️ Guía de Configuración Técnica (Self-Hosted)
-Para replicar el entorno de Luciana Ramirez Systems, sigo este proceso de despliegue:
+🛠️ Stack Tecnológico
+Orquestador: n8n (Desplegado en Docker).
 
-Entorno: Docker Desktop para la orquestación del contenedor de n8n.
+IA: OpenAI (GPT-4o) & Google Gemini.
 
-Arranque del Contenedor:
+Infraestructura: ngrok (Túneles de Webhook seguros).
+
+Integraciones: Telegram API, Google Sheets, Gmail, https://www.google.com/search?q=Cal.com.
+
+🔧 Guía Rápida de Instalación (Entorno Local)
+Para poner en marcha el sistema de Luciana Ramirez Systems:
+
+Levantar el contenedor de n8n:
 
 PowerShell
-docker run -it --rm --name n8n -p 5678:5678 -v C:\n8n-data:/home/node/.n8n -e N8N_EDITOR_BASE_URL=https://[TU-URL].ngrok-free.dev -e WEBHOOK_URL=https://[TU-URL].ngrok-free.dev n8nio/n8n start
-Exposición: Túnel seguro mediante ngrok: ngrok http 5678.
+docker run -it --rm --name n8n -p 5678:5678 -v C:\n8n-data:/home/node/.n8n n8nio/n8n start
+Exponer el puerto local:
 
-📈 Desafíos Solucionados
-Gestión de Formatos: Superación de errores de parsing en nodos de clasificación antiguos mediante el uso de AI Agents y modelos de respuesta en texto plano.
+PowerShell
+ngrok http 5678
+Configurar Webhooks: Actualizar las URLs en los nodos de Telegram y https://www.google.com/search?q=Cal.com con la dirección provista por ngrok.
 
-Control de Rate Limits: Implementación de estrategias de respaldo entre OpenAI y Gemini para garantizar la disponibilidad 24/7.
+📈 Resultados Obtenidos
+Disponibilidad: Atención inmediata al prospecto 24/7.
 
-Integridad de Datos: Uso de esquemas JSON estrictos para evitar alucinaciones en la extracción de documentos de identidad.
+Precisión: Reducción de errores de carga de datos mediante el uso de Information Extractors.
 
-📬 Contacto
-Luciana Ramirez Systems - luciana.ramirez.systems@gmail.com
-Especialistas en flujos de trabajo inteligentes y optimización de procesos.
+Escalabilidad: Capacidad de gestionar múltiples hilos de conversación simultáneamente sin intervención humana.
+
+Desarrollado por Luciana Ramirez Systems Impulsando la eficiencia empresarial mediante el poder de la Inteligencia Artificial.
