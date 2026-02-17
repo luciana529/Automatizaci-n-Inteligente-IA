@@ -1,0 +1,203 @@
+{
+  "name": "webhook_n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-clasificador",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1168,
+        -704
+      ],
+      "id": "554e36bd-e671-49f3-aea2-8d32930f96ab",
+      "name": "Webhook",
+      "webhookId": "ac48d81b-ff89-45be-a5c5-fe4644bdf5d3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"Eres el sistema de comunicación automática de Luciana Ramirez Systems. Tu única función es redactar el cuerpo de un correo electrónico personalizado para el cliente.\n\nREGLAS CRÍTICAS DE SALIDA:\n\nTu respuesta debe ser exclusivamente el texto del correo electrónico.\n\nNo incluyas explicaciones como 'Aquí tienes el correo' o 'He clasificado el lead'.\n\nNo menciones categorías internas (como [URGENTE] o [INTERESADO]) de forma técnica, úsalas solo para ajustar el tono del mensaje.\n\nUsa el nombre del cliente que aparece en los datos del formulario.\n\nESTRUCTURA DEL MENSAJE:\n\n\n\nAgradecimiento por contactar a Luciana Ramirez Systems.\n\nUna frase breve que demuestre que entendiste su consulta (sin dar detalles técnicos de cómo lo haces).\n\nSi detectas que es una oportunidad de negocio clara, asegura que tendrá 'prioridad máxima'.\n\nCierre profesional firmado por 'Equipo de Luciana Ramirez Systems'.\n\nEJEMPLO DE TONO:\n' Hemos recibido tu solicitud sobre [Tema]. En breve, nuestro equipo de Luciana Ramirez Systems se comunicará contigo para darte seguimiento. ¡Gracias por confiar en nosotros!'\"\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -928,
+        -704
+      ],
+      "id": "27423d2f-376a-4933-a9ca-3f315385b70d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1008,
+        -496
+      ],
+      "id": "2c734df5-730e-40e9-889c-f1c3ff61c322",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EYQ1P9u4qVEDEJE8",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -432,
+        -704
+      ],
+      "id": "ce728657-f52a-4474-92fe-1da8c7109933",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.eventId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -864,
+        -496
+      ],
+      "id": "6838ebb9-cda9-4501-92fc-3edd69d094ca",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.data.fields[1].value }}",
+        "subject": "Respuesta de Luciana Ramirez Systems - Clasificación de tu consulta",
+        "message": "=hola!,{{ $('Webhook').item.json.body.data.fields[0].value }}: <br><br>{{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -608,
+        -704
+      ],
+      "id": "2a003e50-02b2-48f2-a742-7fb4ccda3dbe",
+      "name": "Send a message",
+      "webhookId": "a258c169-bace-4b77-9cb7-86fb69b06a7c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "p3VH4QJuv2gD6YcK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Clasificador de Leads IA - LRS\n\nFlujo: Tally → n8n (AI Agent) → Gmail\n\nFunción: Captura leads en tiempo real, los clasifica por intención y responde automáticamente con un correo personalizado.\n\nTecnologías: Webhooks, OpenAI (GPT-4o), Gmail API.\n\nValor: Elimina el tiempo de espera del cliente y asegura que los leads calificados reciban prioridad máxima.",
+        "height": 352,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1456,
+        -784
+      ],
+      "typeVersion": 1,
+      "id": "7664430a-924f-419c-bf7d-c1405964376f",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "dce27835-33a6-4259-9c2f-86a34c04ff00",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "193188f8453b2c43a2b99e669200f32e7aa2309ae438f0d617d0301a2cc1643f"
+  },
+  "id": "BhQ1q8xjJjTsd11cWaVs3",
+  "tags": []
+}
